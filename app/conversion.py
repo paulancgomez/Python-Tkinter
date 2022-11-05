@@ -1,49 +1,63 @@
-#-------------- 1° PASO: Importamos los modulos ------------------
-
-#importamos el módulo principal tkinter abreviado como tk
 import tkinter as tk
-#importamos el módulo ttk que se encuentra dentro de tkinter
 from tkinter import ttk
+from tkinter.messagebox import showerror
 
-# ------------- 2° PASO: Clases y Funciones --------------------
-class Aplicacion(ttk.Frame):
-
-    def __init__(self, parent):
-        super().__init__(parent)
-
-        self.etiqueta_temp_celsius = ttk.Label(parent, text="Temperatura en ºC:")
-        self.etiqueta_temp_celsius.place(x=20, y=20)
-
-        self.caja_temp_celsius = ttk.Entry(parent)
-        self.caja_temp_celsius.place(x=140, y=20, width=60)
-
-        self.boton_convertir = ttk.Button(parent, text="Convertir", command=self.convertir_temp)
-        self.boton_convertir.place(x=20, y=60)
-
-        self.etiqueta_temp_kelvin = ttk.Label(parent, text="Temperatura en K: n/a")
-        self.etiqueta_temp_kelvin.place(x=20, y=120)
-
-        self.etiqueta_temp_fahrenheit = ttk.Label(parent, text="Temperatura en ºF: n/a")
-        self.etiqueta_temp_fahrenheit.place(x=20, y=160)
-
-    def convertir_temp(self):
-        temp_celsius = float(self.caja_temp_celsius.get())
-        temp_kelvin = temp_celsius + 273.15
-        temp_fahrenheit = temp_celsius*1.8 + 32
-        self.etiqueta_temp_kelvin.config(text=f"Temperatura en K: {temp_kelvin}")
-        self.etiqueta_temp_fahrenheit.config(text=f"Temperatura en ºF: {temp_fahrenheit}")
-
-# ------------- 3° PASO: Crear la ventana principal --------------
-ventana = tk.Tk()
-
-# ------------- 4° PASO: damos un título y un tamaño a la ventana
-ventana.title("Conversor de temperatura")
-ventana.config(width=400, height=300)
-
-# -------------- 5° PASO: Invocación de funciones -----------------
-app = Aplicacion(ventana)
-
-#-------------- ULTIMO PASO: bucle principal del programa (método mainloop()) --------------------
-ventana.mainloop()
+# root window
+root = tk.Tk()
+root.title('Temperature Converter')
+root.geometry('300x70')
+root.resizable(False, False)
 
 
+def fahrenheit_to_celsius(f):
+    """ Convert fahrenheit to celsius
+    """
+    return (f - 32) * 5/9
+
+
+# frame
+frame = ttk.Frame(root)
+
+
+# field options
+options = {'padx': 5, 'pady': 5}
+
+# temperature label
+temperature_label = ttk.Label(frame, text='Fahrenheit')
+temperature_label.grid(column=0, row=0, sticky='W', **options)
+
+# temperature entry
+temperature = tk.StringVar()
+temperature_entry = ttk.Entry(frame, textvariable=temperature)
+temperature_entry.grid(column=1, row=0, **options)
+temperature_entry.focus()
+
+# convert button
+
+
+def convert_button_clicked():
+    """  Handle convert button click event 
+    """
+    try:
+        f = float(temperature.get())
+        c = fahrenheit_to_celsius(f)
+        result = f'{f} Fahrenheit = {c:.2f} Celsius'
+        result_label.config(text=result)
+    except ValueError as error:
+        showerror(title='Error', message=error)
+
+
+convert_button = ttk.Button(frame, text='Convert')
+convert_button.grid(column=2, row=0, sticky='W', **options)
+convert_button.configure(command=convert_button_clicked)
+
+# result label
+result_label = ttk.Label(frame)
+result_label.grid(row=1, columnspan=3, **options)
+
+# add padding to the frame and show it
+frame.grid(padx=10, pady=10)
+
+
+# start the app
+root.mainloop()
